@@ -14,15 +14,15 @@ using namespace std;
 class Registrar {
 
     public:
-        Registrar();
-        Registrar(vector<int> *info);
-        ~Registrar();
+        Registrar(); // default constructor
+        Registrar(vector<int> *info); // overloaded constructor
+        ~Registrar(); // destructor
 
         void simulate(); // run simulation
         void calcStats(); // calculate all statistics
         void printStats(); // print statistics calculated
 
-        void print();
+        void print(); // for debugging
 
         // stats
         float meanStudentWaitTime;
@@ -47,7 +47,8 @@ class Registrar {
 
         void setUp(vector<int> *info); // called from overloaded constructor to initialize variables
         int determineTotalStudents(vector<int> *info); // finds out how many students total
-        int getNextOpenWindowIndex();
+        int getNextOpenWindowIndex(); // returns index of next open window (-1 if none found)
+        bool allWindowsAreEmpty(); // returns true if all windows are unoccupied
 };
 
 #endif

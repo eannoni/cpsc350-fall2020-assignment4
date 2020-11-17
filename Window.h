@@ -9,25 +9,26 @@ using namespace std;
 
 class Window {
     public:
-        Window();
-        ~Window();
-        int getIdleTime();
-        bool isOccupied();
+        Window(); // default constructor
+        ~Window(); // destructor
 
-        void incrementIdleTime();
+        int getIdleTime(); // returns idle time
+        bool isOccupied(); // returns true if window has a current student
 
-        int getCurrStudentWindowTime();
-        void decrementCurrStudentWindowTime();
-        void setCurrStudent(Student *s);
-        void clearCurrStudent();
+        void incrementIdleTime(); // increments idle time
 
-        string toString();
+        int getCurrStudentWindowTime(); // returns window time left for this student
+        void decrementCurrStudentWindowTime(); // decrements this student's window time
+        void setCurrStudent(Student *s); // assigns current student pointer
+        void clearCurrStudent(); // clears current student pointer
 
-        Student *currStudent;
-        bool wasOccupied;
+        string toString(); // for debugging
+
+        Student *currStudent; // pointer to current student at this window
+        bool wasOccupied; // is set as true when a student leaves a window, and set back to false for next tick
 
     private:
-        int idleTime;
+        int idleTime; // amount of time a window has not had a student
 };
 
 #endif

@@ -7,19 +7,21 @@ using namespace std;
 
 class Student {
     public:
-        Student();
-        Student(int arrivalTime, int windowTime);
-        ~Student();
+        Student(); // default constructor
+        Student(int arrivalTime, int windowTime); // overloaded constructor
+        ~Student(); // destructor
 
+        // accessors
         int getArrivalTime();
         int getExitTime();
         int getWindowTime();
         int getTotalWaitTime();
 
+        // mutators
         void setExitTime(int exitTime);
         void spendWindowTime(); // decrements windowTime
 
-        string toString();
+        string toString(); // for debugging
 
     private:
         int arrivalTime; // time arrived in queue

@@ -1,6 +1,6 @@
 #include "Registrar.h"
 
-#include <bits/stdc++.h>
+#include <bits/stdc++.h> // sort function
 
 Registrar::Registrar() {
     clockTick = -1;
@@ -42,35 +42,33 @@ Registrar::Registrar(vector<int> *info) {
 }
 
 Registrar::~Registrar() {
-    for(int i = 0; i < windowsSize; ++i) {
+    for(int i = 0; i < windowsSize; ++i)
         delete windows[i];
-    }
+
     delete[] windows;
 
-    for(int i = 0; i < studentsSize; ++i) {
+    for(int i = 0; i < studentsSize; ++i)
         delete students[i];
-    }
+
     delete students;
 
     delete studentQueue;
 }
 
+// run simulation
 void Registrar::simulate() {
-    // loop until the queue is empty (ignores when queue is empty at the start)
-    while(studentIndex == 0 || !studentQueue->isEmpty()) {
+    // loop while there are still students left to arrive, the queue isn't empty, or all windows aren't empty
+    while((studentIndex < studentsSize) || !studentQueue->isEmpty() || !allWindowsAreEmpty()) {
 
         // increment tick
         clockTick++;
-        cout << "EVENT: clock tick" << endl;
 
         // add Students from array to queue
         while(studentIndex < studentsSize) {
-            if(students[studentIndex]->getArrivalTime() == clockTick) {
+            if(students[studentIndex]->getArrivalTime() == clockTick)
                 studentQueue->enqueue(students[studentIndex++]);
-                cout << "EVENT: student enters line" << endl;
-            } else {
+            else
                 break;
-            }
         }
 
         // check windows, if occupied then either remove finished students or spend student time
@@ -81,7 +79,6 @@ void Registrar::simulate() {
                 if(currWindow->getCurrStudentWindowTime() == 0) {
                     currWindow->clearCurrStudent();
                     currWindow->wasOccupied = true;
-                    cout << "EVENT: student leaves window " << i << endl;
                 }
             }
         }
@@ -92,30 +89,25 @@ void Registrar::simulate() {
             if(windowIndex != -1) { // if there is a window open...
                 // dequeue student and send to window
                 Student *temp = studentQueue->dequeue();
-                cout << "EVENT: student arrives at window " << windowIndex << endl;
                 // set student's exit time
                 temp->setExitTime(clockTick);
                 windows[windowIndex]->setCurrStudent(temp);
-            } else { // if all windows are occupied
+            } else // if all windows are occupied
                 break;
-            }
         }
 
-        // spend window time
+        // spend window time only if the window has not been occupied this tick
         for(int i = 0; i < windowsSize; ++i) {
             Window *currWindow = windows[i];
-            if(currWindow->wasOccupied) {
+            if(currWindow->wasOccupied)
                 currWindow->wasOccupied = false;
-            } else if(!currWindow->isOccupied()) {
+            else if(!currWindow->isOccupied())
                 currWindow->incrementIdleTime();
-            }
         }
-
-        print();
-
     }
 }
 
+// calculate all statistics
 void Registrar::calcStats() {
     //STUDENT STATS
     int *waitTimes = new int[studentsSize];
@@ -169,8 +161,9 @@ void Registrar::calcStats() {
     numWindowsIdleOver5Min = sum;
 }
 
+// prints all stats
 void Registrar::printStats() {
-    cout << "\n--------| Simulation Stats |--------\n" << endl;
+    cout << "\n--------------| Simulation Stats |--------------\n" << endl;
     cout << "Students" << endl;
     cout << "\tMean wait time: \t\t" << meanStudentWaitTime << endl;
     cout << "\tMedian wait time: \t\t" << medianStudentWaitTime << endl;
@@ -181,9 +174,10 @@ void Registrar::printStats() {
     cout << "\tMean idle time:\t\t\t" << meanWindowIdleTime << endl;
     cout << "\tLongest idle time:\t\t" << longestWindowIdleTime << endl;
     cout << "\tAmount idle over 5 minutes:\t" << numWindowsIdleOver5Min << endl;
-    cout << "\n------------------------------------\n" << endl;
+    cout << "\n------------------------------------------------\n" << endl;
 }
 
+// for debugging
 void Registrar::print() {
     cout << "------ REGISTRAR DATA: ------" << endl;
     cout << "\nClock Tick: " << clockTick << endl;
@@ -199,6 +193,7 @@ void Registrar::print() {
     cout << "\n-----------------------------\n" << endl;
 }
 
+// called from overloaded constructor to initialize variables
 void Registrar::setUp(vector<int> *info) {
     // set sizes
     windowsSize = info->at(0);
@@ -224,22 +219,31 @@ void Registrar::setUp(vector<int> *info) {
     studentQueue = new GenQueue<Student>();
 }
 
+// finds out how many students total
 int Registrar::determineTotalStudents(vector<int> *info) {
     int i = 2;
     int totalStudents = 0;
     while(i < info->size()) {
         totalStudents += info->at(i);
-
         i += info->at(i) + 2;
     }
     return totalStudents;
 }
 
+// returns index of next open window (-1 if none found)
 int Registrar::getNextOpenWindowIndex() {
     for(int i = 0; i < windowsSize; ++i) {
-        if(!windows[i]->isOccupied()) {
+        if(!windows[i]->isOccupied())
             return i;
-        }
     }
     return -1;
+}
+
+// returns true if all windows are unoccupied
+bool Registrar::allWindowsAreEmpty() {
+    for(int i = 0; i < windowsSize; ++i) {
+        if(windows[i]->isOccupied())
+            return false;
+    }
+    return true;
 }
